@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FIAR Practice</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--paper:#f7f8fc;--blue:#2563eb;--red:#dc3b45;--gold:#f6c84c}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#eef4ff,#fff8e8);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+main{max-width:1050px;margin:auto;padding:22px 16px 40px}.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:clamp(27px,4vw,38px);margin:0}.sub{color:var(--muted);margin:5px 0 18px}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.8fr);gap:18px;align-items:start}
+.panel{background:#fff;border:1px solid #e3e8f1;border-radius:18px;padding:16px;box-shadow:0 8px 28px #26334d0d}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}button,select{font:inherit;border:1px solid #d4dbe8;border-radius:10px;padding:9px 12px;background:white;color:var(--ink);cursor:pointer}button.primary{background:#243b70;color:white;border-color:#243b70}button:disabled{opacity:.45;cursor:not-allowed}
+.status{padding:11px 13px;border-radius:12px;background:#f1f5fb;font-weight:650;margin:10px 0}
+#board{width:100%;max-width:650px;display:block;margin:auto;touch-action:manipulation}
+.node{cursor:pointer}.node circle{stroke:#fff;stroke-width:3;filter:drop-shadow(0 2px 2px #0002)}.node.empty circle{fill:#e7edf6;stroke:#9eacc1}.node.blue circle{fill:#2672e8}.node.red circle{fill:#e64b55}.node.mark circle{stroke:#f5cf4b;stroke-width:6}.node.selected circle{stroke:#172033;stroke-width:6}.node.target circle{fill:#d9f4df;stroke:#23834a;stroke-width:5}
+.edge{stroke:#8b9bb4;stroke-width:3;stroke-linecap:round;opacity:.8}.zone{fill:#ffe59b;opacity:.45;stroke:#e0b43d;stroke-dasharray:5 5}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin:10px 0}.dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:-2px;margin-right:5px}
+.info h2{font-size:19px;margin:2px 0 10px}.info p,.info li{font-size:14px;line-height:1.5;color:#475569}.info ul{padding-left:20px}
+.pieces{display:flex;justify-content:space-between;gap:10px;margin:12px 0}.count{font-weight:700}.small{font-size:12px;color:var(--muted)}.banner{font-size:12px;color:#765500;background:#fff7dc;border:1px solid #f3df9b;padding:10px;border-radius:10px;margin-top:12px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.info{order:2}}
+</style>
+</head>
+<body><main>
+<div class="top"><div><h1>FIAR Practice</h1><div class="sub">A family practice prototype · one or two players · no ads or accounts</div></div><div class="small">Unofficial learning prototype</div></div>
+<div class="layout">
+<section class="panel">
+<div class="controls">
+<label>Mode <select id="mode"><option value="cpu">One player · vs computer</option><option value="local">Two players · same device</option></select></label>
+<label>Computer <select id="level"><option value="easy">Easy</option><option value="medium">Medium</option><option value="hard">Hard</option></select></label>
+<button id="new" class="primary">New game</button><button id="undo">Undo</button>
+</div>
+<div class="status" id="status">Blue to place chip 1 of 7.</div>
+<svg id="board" viewBox="0 0 700 700" role="img" aria-label="FIAR practice board"></svg>
+<div class="legend"><span><i class="dot" style="background:#2672e8"></i>Blue</span><span><i class="dot" style="background:#e64b55"></i>Red</span><span>★ marked Fire Extinguisher chip</span><span>Green ring = legal destination</span></div>
+<div class="pieces"><div class="count" id="blueCount">Blue: 0/7 placed</div><div class="count" id="redCount">Red: 0/7 placed</div></div>
+<div class="small" id="phase">Phase I · alternate placement</div>
+</section>
+<aside class="panel info">
+<h2>How to play</h2>
+<ul>
+<li>Players take turns placing 7 chips of their color on empty spaces. Two chips per color are marked ★.</li>
+<li>After all 14 chips are placed, players take turns moving one chip along a straight connected line through empty spaces. No jumping or landing on an occupied space.</li>
+<li>To win, identify 4 or more chips of one color on a straight connected line, with no opposite-color chip between them.</li>
+<li>A winning line cannot cross the central yellow zone. A winning line also cannot use spaces directly connected by a line to an opponent's marked chip.</li>
+<li>You may win using either color's chips. You must claim the line on your turn.</li>
+</ul>
+<div class="banner">Prototype note: this is an independently drawn practice board and a first-pass rules implementation based on the public Division II tournament highlights. Its board geometry and movement network are simplified, not an official tournament board. Please compare with your physical board/rule manual before treating it as tournament-accurate.</div>
+<p><b>How to move:</b> Select one of your chips, then tap a green destination. During placement, tap any empty circle.</p>
+</aside>
+</div>
+</main>
+<script>
+const N=7, center=350, step=82, coords=[];
+for(let r=0;r<N;r++)for(let c=0;c<N;c++)coords.push({r,c,x:104+c*step,y:104+r*step});
+const key=(r,c)=>r*N+c;
+const dirs=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+const inb=(r,c)=>r>=0&&r<N&&c>=0&&c<N;
+const isZone=(r,c)=>r===3&&c===3; // central yellow area is represented as a non-playable central hub
+const playable=i=>!isZone(coords[i].r,coords[i].c);
+const adj=Array.from({length:N*N},()=>[]);
+for(let i=0;i<N*N;i++){if(!playable(i))continue;let {r,c}=coords[i];for(const [dr,dc] of dirs){let rr=r+dr,cc=c+dc;if(inb(rr,cc)&&playable(key(rr,cc)))adj[i].push(key(rr,cc));}}
+const $=id=>document.getElementById(id);
+let state;
+function fresh(){state={board:Array(N*N).fill(null),turn:'B',placed:{B:0,R:0},selected:null,phase:'place',winner:null,history:[]};state.board.forEach((_,i)=>{if(!playable(i))state.board[i]='X'});state.board[0]='X';state.board[N*N-1]='X';}
+function snap(){state.history.push(JSON.stringify({board:state.board,turn:state.turn,placed:state.placed,phase:state.phase,winner:state.winner}));}
+function restore(){if(!state.history.length)return;let x=JSON.parse(state.history.pop());Object.assign(state,x);state.selected=null;render();}
+function other(p){return p==='B'?'R':'B'}
+function markedCount(p){return state.board.filter(x=>x&&x.p===p&&x.mark).length}
+function allPlaced(){return state.placed.B===7&&state.placed.R===7}
+function lineSegments(){
+ let lines=[];
+ // all straight horizontal, vertical and diagonal sequences; each is a full run of connected playable spaces
+ const vectors=[[0,1],[1,0],[1,1],[1,-1]];
+ for(let r=0;r<N;r++)for(let c=0;c<N;c++)for(const [dr,dc] of vectors){
+  let pr=r-dr,pc=c-dc;if(inb(pr,pc)&&playable(key(pr,pc)))continue;
+  let cells=[],rr=r,cc=c;
+  while(inb(rr,cc)&&playable(key(rr,cc))){cells.push(key(rr,cc));rr+=dr;cc+=dc}
+  if(cells.length>=4)lines.push(cells);
+ }
+ return lines;
+}
+const lines=lineSegments();
+function adjacentTo(i,j){return adj[i].includes(j)}
+function winningFor(p){
+ for(const line of lines){
+  for(let a=0;a<line.length;a++)for(let b=a+3;b<line.length;b++){
+   const seq=line.slice(a,b+1);
+   const chips=seq.map(i=>state.board[i]);
+   if(chips.some(x=>!x))continue;
+   const color=chips[0].p;if(!chips.every(x=>x.p===color))continue;
+   // The highlighted rule bars any path-space directly connected to an opponent marked chip.
+   let blocked=false;
+   for(const i of seq)for(let j=0;j<state.board.length;j++){
+    const ch=state.board[j];if(ch&&ch.p===other(p)&&ch.mark&&adjacentTo(i,j))blocked=true;
+   }
+   if(!blocked)return {line:seq,color};
+  }
+ }
+ return null;
+}
+function validMoves(from){
+ let {r,c}=coords[from],out=[];
+ for(const [dr,dc] of dirs){let rr=r+dr,cc=c+dc;while(inb(rr,cc)&&playable(key(rr,cc))){let i=key(rr,cc);if(state.board[i])break;out.push(i);rr+=dr;cc+=dc;}}
+ return out;
+}
+function statusText(){
+ if(state.winner)return (state.winner==='T'?'Tie game':(state.winner==='B'?'Blue':'Red')+' wins!')+' 🎉';
+ if(state.phase==='place')return `${state.turn==='B'?'Blue':'Red'}: place chip ${state.placed[state.turn]+1} of 7.`;
+ return `${state.turn==='B'?'Blue':'Red'} to move. Find a four-chip path!`;
+}
+function render(){
+ $('status').textContent=statusText();
+ $('phase').textContent=state.phase==='place'?'Phase I · alternate placement':'Phase II · movement';
+ $('blueCount').textContent=`Blue: ${state.placed.B}/7 placed · ${markedCount('B')} marked`;
+ $('redCount').textContent=`Red: ${state.placed.R}/7 placed · ${markedCount('R')} marked`;
+ const svg=$('board');svg.innerHTML='';
+ // central yellow hub
+ const zone=document.createElementNS('http://www.w3.org/2000/svg','rect');zone.setAttribute('x',300);zone.setAttribute('y',300);zone.setAttribute('width',100);zone.setAttribute('height',100);zone.setAttribute('rx',18);zone.setAttribute('class','zone');svg.append(zone);
+ // edges: only direct connected links
+ const seen=new Set();
+ for(let i=0;i<adj.length;i++)for(const j of adj[i]){let k=[i,j].sort((a,b)=>a-b).join('-');if(seen.has(k))continue;seen.add(k);let a=coords[i],b=coords[j],el=document.createElementNS('http://www.w3.org/2000/svg','line');el.setAttribute('x1',a.x);el.setAttribute('y1',a.y);el.setAttribute('x2',b.x);el.setAttribute('y2',b.y);el.setAttribute('class','edge');svg.append(el);}
+ const targets=state.selected===null?[]:validMoves(state.selected);
+ for(let i=0;i<coords.length;i++){if(!playable(i))continue;let p=coords[i],v=state.board[i],g=document.createElementNS('http://www.w3.org/2000/svg','g');let cls='node '+(!v?'empty':v.p==='B'?'blue':'red');if(v?.mark)cls+=' mark';if(state.selected===i)cls+=' selected';if(targets.includes(i))cls+=' target';g.setAttribute('class',cls);
+ let circle=document.createElementNS('http://www.w3.org/2000/svg','circle');circle.setAttribute('cx',p.x);circle.setAttribute('cy',p.y);circle.setAttribute('r',v?25:18);g.append(circle);
+ if(v){let t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',p.x);t.setAttribute('y',p.y+7);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','22');t.setAttribute('font-weight','800');t.setAttribute('fill','white');t.textContent=v.mark?'★':'';g.append(t);}
+ g.addEventListener('click',()=>tap(i));svg.append(g);
+ }
+ $('undo').disabled=!state.history.length;
+ $('level').disabled=$('mode').value!=='cpu';
+}
+function tap(i){
+ if(state.winner||isComputerTurn())return;
+ const v=state.board[i];
+ if(state.phase==='place'){
+  if(v)return;
+  snap();state.board[i]={p:state.turn,mark:markedCount(state.turn)<2};state.placed[state.turn]++;
+  const w=winningFor(state.turn);if(w){state.winner=state.turn;render();return}
+  if(allPlaced())state.phase='move';
+  state.turn=other(state.turn);render();maybeAI();return;
+ }
+ if(state.selected===null){if(v&&v.p===state.turn){state.selected=i;render()}return}
+ if(v&&v.p===state.turn){state.selected=i;render();return}
+ const moves=validMoves(state.selected);if(!moves.includes(i))return;
+ snap();state.board[i]=state.board[state.selected];state.board[state.selected]=null;state.selected=null;
+ const w=winningFor(state.turn);if(w){state.winner=state.turn;render();return}
+ state.turn=other(state.turn);render();maybeAI();
+}
+function isComputerTurn(){return $('mode').value==='cpu'&&state.turn==='R'}
+function candidates(){
+ let out=[];
+ if(state.phase==='place'){for(let i=0;i<state.board.length;i++)if(!state.board[i])out.push({to:i});}
+ else for(let i=0;i<state.board.length;i++)if(state.board[i]?.p===state.turn)for(const to of validMoves(i))out.push({from:i,to});
+ return out;
+}
+function simulate(m){let b=state.board.slice();if(m.from!==undefined){b[m.to]=b[m.from];b[m.from]=null}else b[m.to]={p:state.turn,mark:markedCount(state.turn)<2};return b}
+function aiScore(m){
+ let old=state.board,oldp=state.placed,oldphase=state.phase;
+ state.board=simulate(m);if(m.from===undefined)state.placed={...state.placed,[state.turn]:state.placed[state.turn]+1};
+ let w=winningFor('R');let score=w?100000:0;
+ if(!w){let opp=other('R');let danger=winningFor(opp);if(danger)score-=4000;}
+ // Prefer centrality and moves that create same-color alignments; avoid opening center.
+ const q=coords[m.to];score+=(3-Math.abs(3-q.r))+(3-Math.abs(3-q.c));
+ if(m.from!==undefined){const before=old[m.from];score+=before.mark?1:0}
+ state.board=old;state.placed=oldp;state.phase=oldphase;return score;
+}
+function maybeAI(){
+ if(!isComputerTurn()||state.winner)return;
+ setTimeout(()=>{
+  if(!isComputerTurn()||state.winner)return;
+  let ms=candidates();if(!ms.length){state.winner='B';render();return}
+  let ranked=ms.map(m=>({m,s:aiScore(m)})).sort((a,b)=>b.s-a.s);
+  let pick;
+  const level=$('level').value;
+  if(level==='easy')pick=ms[Math.floor(Math.random()*ms.length)];
+  else if(level==='medium'){let pool=ranked.slice(0,Math.max(1,Math.ceil(ranked.length*.3)));pick=pool[Math.floor(Math.random()*pool.length)].m}
+  else pick=ranked[0].m;
+  snap();if(pick.from!==undefined){state.board[pick.to]=state.board[pick.from];state.board[pick.from]=null}else{state.board[pick.to]={p:'R',mark:markedCount('R')<2};state.placed.R++}
+  let w=winningFor('R');if(w)state.winner='R';else{if(allPlaced())state.phase='move';state.turn='B'}
+  render();
+ },350);
+}
+$('mode').addEventListener('change',()=>{if(state.turn==='R'&&$('mode').value==='local'){}render();maybeAI()});
+$('level').addEventListener('change',render);
+$('new').addEventListener('click',()=>{fresh();render();maybeAI()});
+$('undo').addEventListener('click',restore);
+fresh();render();
+</script></body></html>
