@@ -304,7 +304,7 @@
     </main>
 
     <footer class="max-w-5xl mx-auto w-full text-center py-2 text-xs text-slate-500 mt-2">
-        Math Pentathlon Division II FIAR Game &bull; Not a Real Game ;Practice Edition ; Developed by Kritesh Shiwakoti ; 
+        Math Pentathlon Division II FIAR Game &bull; Not a Real Game ; Practice Edition ; Developed by Kritesh
     </footer>
 
     <!-- MODAL: RULES -->
@@ -395,10 +395,10 @@
             const nodes = [];
             const CENTER_X = 250;
             const CENTER_Y = 250;
-            const SPACING_X = 42;
-            const SPACING_Y = 42;
+            const SPACING_X = 44;
+            const SPACING_Y = 44;
 
-            // Blueprint rows: 1, 3, 5, 7, 7(gap), 7, 5, 3, 1
+            // Fixed Blueprint rows: 1, 3, 5, 7, 7(hazard gap), 7, 5, 3, 1
             const rowCounts = [1, 3, 5, 7, 7, 7, 5, 3, 1];
             let idCounter = 0;
 
@@ -434,7 +434,7 @@
         const NODE_BY_ID = {};
         NODES.forEach(n => NODE_BY_ID[n.id] = n);
 
-        // Find 8-way adjacency (horizontal, vertical, and diagonal)
+        // Find 8-way adjacency (horizontal, vertical, and diagonal straight lines)
         const ADJACENCY = {};
         NODES.forEach(n1 => {
             ADJACENCY[n1.id] = [];
@@ -587,7 +587,7 @@
                     if (!drawnPairs.has(pairKey)) {
                         drawnPairs.add(pairKey);
                         linesHTML += `
-                            <line x1="${n1.x}" y1="${n1.y}" x2="${n2.x}" y2="${n2.y}" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="${n1.x}" y1="${n1.y}" x2="${n2.x}" y2="${n2.y}" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
                         `;
                     }
                 });
@@ -600,7 +600,7 @@
             let nodesHTML = '';
             NODES.forEach(n => {
                 nodesHTML += `
-                    <circle id="node-circle-${n.id}" class="node-target" cx="${n.x}" cy="${n.y}" r="13" fill="#ffffff" stroke="#ef4444" stroke-width="3" filter="url(#shadow)" onclick="handleNodeClick(${n.id})"/>
+                    <circle id="node-circle-${n.id}" class="node-target" cx="${n.x}" cy="${n.y}" r="13" fill="#ffffff" stroke="#ef4444" stroke-width="3" filter="url(#shadow)"/>
                 `;
             });
             elements.svgNodes.innerHTML = nodesHTML;
@@ -662,7 +662,7 @@
                 validDestinations.forEach(adjId => {
                     const n = NODE_BY_ID[adjId];
                     overlaysHTML += `
-                        <circle cx="${n.x}" cy="${n.y}" r="15" fill="#22c55e" fill-opacity="0.6" stroke="#4ade80" stroke-width="3" class="valid-destination" onclick="handleNodeClick(${adjId})"/>
+                        <circle cx="${n.x}" cy="${n.y}" r="15" fill="#22c55e" fill-opacity="0.75" stroke="#4ade80" stroke-width="3" class="valid-destination" onclick="handleNodeClick(${adjId})"/>
                     `;
                 });
             }
