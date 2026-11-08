@@ -51,10 +51,10 @@ footer{grid-column:1/-1;text-align:center;font-size:11px;color:#5d6ba0}
  <div class="left">
   <h1>FIAR</h1>
   <div class="sub">Math Pentathlon Division II &middot; Four In A Row</div>
-  <div class="player" id="card1"><div><span class="dot" style="background:#22c55e"></span><b id="name1">You (Green)</b></div>
-   <div class="row"><span>Regular chips left</span><b id="reg1">6</b></div><div class="row"><span>Fire Extinguisher (dot) left</span><b id="fe1">1</b></div></div>
-  <div class="player" id="card2"><div><span class="dot" style="background:#a855f7"></span><b id="name2">Computer (Purple)</b></div>
-   <div class="row"><span>Regular chips left</span><b id="reg2">6</b></div><div class="row"><span>Fire Extinguisher (dot) left</span><b id="fe2">1</b></div></div>
+  <div class="player" id="card1"><div><span class="dot" style="background:#3b82f6"></span><b id="name1">You (Blue)</b></div>
+   <div class="row"><span>Regular chips left</span><b id="reg1">5</b></div><div class="row"><span>Fire Extinguisher (dot) left</span><b id="fe1">2</b></div></div>
+  <div class="player" id="card2"><div><span class="dot" style="background:#ef4444"></span><b id="name2">Computer (Red)</b></div>
+   <div class="row"><span>Regular chips left</span><b id="reg2">5</b></div><div class="row"><span>Fire Extinguisher (dot) left</span><b id="fe2">2</b></div></div>
   <div class="panel"><h2 id="phase">Placement phase</h2><div id="status"></div></div>
  </div>
 
@@ -63,8 +63,8 @@ footer{grid-column:1/-1;text-align:center;font-size:11px;color:#5d6ba0}
    <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1670"/><stop offset=".5" stop-color="#0a45a8"/><stop offset="1" stop-color="#0a1670"/></linearGradient>
     <linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4a1c"/><stop offset=".5" stop-color="#ff9d1c"/><stop offset="1" stop-color="#ffe85a"/></linearGradient>
-    <radialGradient id="g1" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="#86efac"/><stop offset=".5" stop-color="#22c55e"/><stop offset="1" stop-color="#14532d"/></radialGradient>
-    <radialGradient id="g2" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="#d8b4fe"/><stop offset=".5" stop-color="#a855f7"/><stop offset="1" stop-color="#4c1d95"/></radialGradient>
+    <radialGradient id="g1" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="#93c5fd"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#1e3a8a"/></radialGradient>
+    <radialGradient id="g2" cx="35%" cy="35%" r="70%"><stop offset="0" stop-color="#fca5a5"/><stop offset=".5" stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/></radialGradient>
     <filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
     <filter id="drop"><feDropShadow dx="3" dy="6" stdDeviation="5" flood-opacity=".55"/></filter>
     <path id="flame" d="M0,0 C-70,-90 -40,-190 -5,-330 C10,-230 80,-200 65,-110 C100,-160 110,-60 70,0 Z"/>
@@ -102,7 +102,7 @@ footer{grid-column:1/-1;text-align:center;font-size:11px;color:#5d6ba0}
   <div class="panel">
    <div id="placer" class="grid2"><button id="t-reg" class="active">Regular chip</button><button id="t-fe">&#9679; Fire Ext. chip</button></div>
    <button class="primary" id="declare">DECLARE FIAR!</button>
-   <div class="grid2" style="margin-top:8px"><button id="end">End turn</button><button id="undo">Undo move</button></div>
+   <button id="end" style="margin-top:8px">&#9873; Pass flag card</button>
   </div>
   <div class="panel">
    <h2>Game setup</h2>
@@ -117,16 +117,17 @@ footer{grid-column:1/-1;text-align:center;font-size:11px;color:#5d6ba0}
 </div>
 
 <div class="modal" id="m-start"><div class="card"><h2>Who goes first?</h2>
- <p id="start-q">Pick a hand. One hand holds the starting colour (Green). Guess right and you go first.</p>
+ <p id="start-q">Pick a hand. One hand holds the starting colour (Blue). Guess right and you play Blue and go first.</p>
  <div class="grid2"><button id="hl">Left hand</button><button id="hr">Right hand</button></div>
  <p id="start-res"></p><button class="primary" id="start-go" style="display:none">Start game</button></div></div>
 
 <div class="modal" id="m-rules"><div class="card"><h2>FIAR rules</h2>
- <p><b>Goal.</b> Make 4 or more chips of one colour in a straight line of connected circles, with no opponent chip in between. Empty circles between your chips are fine. The line cannot go through the fire in the centre.</p>
- <p><b>Chips.</b> Each player has 7 chips: 6 regular and 1 Fire Extinguisher (dotted). A Fire Extinguisher blocks every chip touching it (on a connected line), of either colour, from counting in a winning line. It never counts itself and cuts any line it sits on.</p>
- <p><b>Phase I, placement.</b> Take turns placing one chip on an empty circle until all 14 are down. You can win during this phase.</p>
- <p><b>Phase II, movement.</b> Move one chip any number of empty circles along one straight line. You cannot jump over chips or pass through the fire.</p>
- <p><b>Ending.</b> After you move, if a winning line exists, for either colour, press DECLARE FIAR! to win. If a player forgets, the opponent can declare on their turn. A wrong claim does nothing.</p>
+ <p><b>Goal.</b> Make 4 chips of one colour on a straight line of connected circles, with no chip of the opposite colour between them. The 4 chips can be yours or your opponent's. Empty circles between them are fine. The line cannot cross the fire in the centre.</p>
+ <p><b>Chips.</b> Each player has 7 chips: 5 regular and 2 Fire Extinguishers (dotted). A Fire Extinguisher blocks chips of the <i>opposite</i> colour that touch it on a connected line, so they cannot count in a winning line. Fire Extinguishers can be part of a winning line. Blocked chips show a dashed ring.</p>
+ <p><b>Flag card.</b> You act only while you hold the flag card. When you finish your turn you pass it to your opponent.</p>
+ <p><b>Phase I, placement.</b> Blue starts. Take turns placing one chip on any empty circle until all 14 chips are down. No chip can be moved until every chip is placed, and a placed chip cannot be taken back. You can win during this phase.</p>
+ <p><b>Phase II, movement.</b> Move one of your own chips any number of empty circles along one straight line. You cannot jump over chips or cross the fire.</p>
+ <p><b>Claiming a win.</b> You must claim FIAR while you still hold the flag card, before you pass it. If a player passes without claiming, the opponent can claim as soon as they receive the flag card. A wrong claim does nothing.</p>
  <button class="primary" onclick="show('m-rules',0)">Got it</button></div></div>
 
 <div class="modal" id="m-msg"><div class="card"><h2 id="msg-t"></h2><p id="msg-b"></p><button class="primary" id="msg-ok">OK</button></div></div>
@@ -148,9 +149,9 @@ const RUNS=[];
  const run=[n.id];let c=n.id;for(;;){const q=nb(c,d);if(q<0)break;run.push(q);c=q;}
  if(run.length>=4)RUNS.push(run);}));
 // ---- Rules engine ----
-const touchesFE=(b,id)=>ADJ[id].some(j=>b[j]&&b[j].fe);
+const touchesFE=(b,id,p)=>ADJ[id].some(j=>b[j]&&b[j].fe&&b[j].p!==p);
 function eachSeg(b,p,cb){for(const run of RUNS){let ids=[],len=0;for(let i=0;i<=run.length;i++){const id=run[i],ch=id===undefined?null:b[id];
- if(id===undefined||(ch&&(ch.p!==p||ch.fe))){if(cb(ids,len))return;ids=[];len=0;}else{len++;if(ch&&!touchesFE(b,id))ids.push(id);}}}}
+ if(id===undefined||(ch&&ch.p!==p)){if(cb(ids,len))return;ids=[];len=0}else{len++;if(ch&&!touchesFE(b,id,p))ids.push(id)}}}}
 function findWin(b,p){let w=null;eachSeg(b,p,ids=>{if(ids.length>=4){w=ids;return true}});return w}
 function anyWin(b){for(const p of[1,2]){const w=findWin(b,p);if(w)return{p,ids:w}}return null}
 function pot(b,p){let s=0;eachSeg(b,p,(ids,len)=>{if(len>=4)s+=ids.length*ids.length});return s}
@@ -163,54 +164,49 @@ function applyMv(b,m,p){const nbd={...b};if(m.t==='p')nbd[m.to]={p,fe:m.type==='
 function after(stock,phase,m,p){if(m.t!=='p')return[stock,phase];const st={1:{...stock[1]},2:{...stock[2]}};st[p][m.type]--;
  return[st,[1,2].every(q=>st[q].reg+st[q].fe===0)?'movement':phase]}
 // ---- State ----
-let S,aiBusy=false,started=false,history=[];
-const CN={1:'Green',2:'Purple'};
-function newState(){const keep=S||{};S={mode:keep.mode||'1p',diff:keep.diff||'hard',cur:1,phase:'placement',sel:null,type:'reg',board:{},
- stock:{1:{reg:6,fe:1},2:{reg:6,fe:1}},moved:false,over:false,win:null,note:''};history=[];started=false}
-const human=()=>!(S.mode==='1p'&&S.cur===2);
+let S,aiBusy=false,started=false;
+const CN={1:'Blue',2:'Red'};
+function newState(){const k=S||{};S={mode:k.mode||'1p',diff:k.diff||'hard',cur:1,ai:0,phase:'placement',sel:null,type:'reg',board:{},
+ stock:{1:{reg:5,fe:2},2:{reg:5,fe:2}},moved:false,over:false,win:null,note:''};started=false}
+const human=()=>S.cur!==S.ai;
 const canAct=()=>started&&!S.over&&!S.moved&&human();
 function ensureType(){const s=S.stock[S.cur];if(s[S.type]<=0)S.type=S.type==='reg'?'fe':'reg'}
-function saveHist(){history.push(JSON.stringify({b:S.board,s:S.stock,ph:S.phase,c:S.cur,mv:S.moved,t:S.type}))}
-function restore(j){const o=JSON.parse(j);S.board=o.b;S.stock=o.s;S.phase=o.ph;S.cur=o.c;S.moved=o.mv;S.type=o.t;S.sel=null;S.note=''}
-function undo(){if(!human()||S.over)return;
- if(S.mode==='1p'){let i=history.map(h=>JSON.parse(h).c).lastIndexOf(1);if(i<0)return;const j=history[i];history.length=i;restore(j)}
- else{if(!history.length)return;restore(history.pop())}
- render()}
 function doApply(m,p){S.board=applyMv(S.board,m,p);if(m.t==='p'){const[st,ph]=after(S.stock,S.phase,m,p);S.stock=st;S.phase=ph}S.moved=true;S.sel=null;S.note=''}
 function endTurn(force){if(S.over||(!force&&!S.moved))return;S.cur=3-S.cur;S.moved=false;S.sel=null;
  if(S.phase==='movement'&&!genMoves(S.board,S.stock,S.phase,S.cur).length){
-  S.note=`${CN[S.cur]} has no legal move, so the turn passes.`;S.cur=3-S.cur;
+  S.note=`${CN[S.cur]} has no legal move, so the flag card passes back.`;S.cur=3-S.cur;
   if(!genMoves(S.board,S.stock,S.phase,S.cur).length){S.over=true;render();return msg('Draw','Neither player can move.')}}
  render();kick()}
 function finish(p,w){S.over=true;S.win=w;S.sel=null;render();
- $('msg-t').textContent=`${p===S.cur&&S.mode==='1p'&&p===1?'You win':(S.mode==='1p'?(p===1?'You win':'Computer wins'):'Player '+p+' wins')}!`;
- $('msg-b').textContent=`FIAR declared: a winning line of ${CN[w.p]} chips is on the board.`;
+ const humanWin=S.mode==='2p'||p!==S.ai;
+ $('msg-t').textContent=S.mode==='1p'?(humanWin?'You win!':'Computer wins!'):`${CN[p]} wins!`;
+ $('msg-b').textContent=`FIAR claimed: a winning line of ${CN[w.p]} chips is on the board.`;
  $('msg-ok').onclick=()=>{show('m-msg',0);newGame()};show('m-msg',1);
- if(p===1&&window.confetti)confetti({particleCount:140,spread:75,origin:{y:.6}})}
+ if(humanWin&&window.confetti)confetti({particleCount:140,spread:75,origin:{y:.6}})}
 function msg(t,b){$('msg-t').textContent=t;$('msg-b').textContent=b;$('msg-ok').onclick=()=>show('m-msg',0);show('m-msg',1)}
 function declare(){if(!started||S.over||!human())return;const w=anyWin(S.board);
  if(w)finish(S.cur,w);else msg('No winning line','There is no 4-in-a-row line for either colour yet. Keep playing.')}
 function nodeClick(id){if(!canAct())return;
  if(S.phase==='placement'){if(S.board[id])return;ensureType();if(S.stock[S.cur][S.type]<=0)return;
-  saveHist();doApply({t:'p',to:id,type:S.type},S.cur);render();return}
+  doApply({t:'p',to:id,type:S.type},S.cur);render();return}
  const ch=S.board[id];if(ch&&ch.p===S.cur){S.sel=id;render();return}
- if(S.sel!==null&&!ch&&reach(S.board,S.sel).includes(id)){saveHist();doApply({t:'m',from:S.sel,to:id},S.cur);render()}}
+ if(S.sel!==null&&!ch&&reach(S.board,S.sel).includes(id)){doApply({t:'m',from:S.sel,to:id},S.cur);render()}}
 // ---- Computer player ----
-function kick(){if(!started||S.over||S.mode!=='1p'||S.cur!==2||aiBusy)return;aiBusy=true;setTimeout(aiTurn,750)}
-function aiPick(){const mvs=genMoves(S.board,S.stock,S.phase,2);if(!mvs.length)return null;
+function kick(){if(!started||S.over||S.mode!=='1p'||S.cur!==S.ai||aiBusy)return;aiBusy=true;setTimeout(aiTurn,750)}
+function aiPick(){const me=S.ai,op=3-me,mvs=genMoves(S.board,S.stock,S.phase,me);if(!mvs.length)return null;
  if(S.diff==='easy')return rnd(mvs);
- const sims=mvs.map(m=>({m,b:applyMv(S.board,m,2)}));
+ const sims=mvs.map(m=>({m,b:applyMv(S.board,m,me)}));
  const wins=sims.filter(s=>anyWin(s.b));if(wins.length)return rnd(wins).m;
  if(S.diff==='medium')return rnd(mvs);
- const safe=sims.filter(s=>{const[st,ph]=after(S.stock,S.phase,s.m,2);
-  return !genMoves(s.b,st,ph,1).some(m=>anyWin(applyMv(s.b,m,1)))});
+ const safe=sims.filter(s=>{const[st,ph]=after(S.stock,S.phase,s.m,me);
+  return !genMoves(s.b,st,ph,op).some(m=>anyWin(applyMv(s.b,m,op)))});
  const pool=safe.length?safe:sims;let best=null,bs=-1e9;
- pool.forEach(s=>{const sc=pot(s.b,2)-.6*pot(s.b,1)+Math.random()*.8;if(sc>bs){bs=sc;best=s.m}});return best}
-function aiTurn(){aiBusy=false;if(S.over||S.cur!==2||S.mode!=='1p')return;
- const w=anyWin(S.board);if(w)return finish(2,w); // opponent forgot to declare
+ pool.forEach(s=>{const sc=pot(s.b,me)-.6*pot(s.b,op)+Math.random()*.8;if(sc>bs){bs=sc;best=s.m}});return best}
+function aiTurn(){aiBusy=false;if(S.over||S.mode!=='1p'||S.cur!==S.ai)return;
+ const w=anyWin(S.board);if(w)return finish(S.ai,w); // opponent passed the flag card without claiming
  const m=aiPick();if(!m){S.note='Computer has no legal move.';return endTurn(true)}
- saveHist();doApply(m,2);render();
- setTimeout(()=>{const w2=anyWin(S.board);if(w2)finish(2,w2);else endTurn()},800)}
+ doApply(m,S.ai);render();
+ setTimeout(()=>{const w2=anyWin(S.board);if(w2)finish(S.ai,w2);else endTurn()},800)}
 // ---- Rendering ----
 const NS='http://www.w3.org/2000/svg';
 function buildBoard(){let l='',seen=new Set();
@@ -219,7 +215,7 @@ function buildBoard(){let l='',seen=new Set();
  $('lines').innerHTML=l;
  $('nodes').innerHTML=NODES.map(n=>`<circle class="node" data-id="${n.id}" cx="${n.x}" cy="${n.y}" r="52" fill="#fff" stroke="#d93a2e" stroke-width="9"/>`).join('')}
 function render(){
- const cur=S.cur,nm=p=>S.mode==='1p'?(p===1?'You':'Computer')+` (${CN[p]})`:`Player ${p} (${CN[p]})`;
+ const cur=S.cur,nm=p=>S.mode==='1p'?(p===S.ai?'Computer':'You')+` (${CN[p]})`:`${CN[p]} player`;
  [1,2].forEach(p=>{$('name'+p).textContent=nm(p);$('reg'+p).textContent=S.stock[p].reg;$('fe'+p).textContent=S.stock[p].fe;
   $('card'+p).classList.toggle('on',started&&!S.over&&cur===p)});
  $('phase').textContent=S.phase==='placement'?'Phase I: Placement':'Phase II: Movement';
@@ -228,7 +224,7 @@ function render(){
  if(!started)t='Pick a hand to start.';
  else if(S.over)t='Game over.';
  else if(!human())t='Computer is thinking...';
- else if(S.moved)t='Move made. Press DECLARE FIAR! if a winning line exists, otherwise End turn (or Undo).';
+ else if(S.moved)t='Done. While you hold the flag card, press DECLARE FIAR! if a winning line exists. Otherwise pass the flag card.';
  else if(S.phase==='placement')t=`${nm(cur)}: tap an empty circle to place a ${S.type==='fe'?'Fire Extinguisher':'regular'} chip.`;
  else t=S.sel===null?`${nm(cur)}: tap one of your chips, then a gold circle in a straight line.`:'Tap a gold circle to move there.';
  $('status').textContent=(S.note?S.note+' ':'')+t;
@@ -237,7 +233,6 @@ function render(){
  $('t-reg').disabled=S.stock[cur].reg<=0;$('t-fe').disabled=S.stock[cur].fe<=0;
  const h=started&&!S.over&&human();
  $('declare').disabled=!h;$('end').disabled=!(h&&S.moved);
- $('undo').disabled=!h||(S.mode==='1p'?!history.some(x=>JSON.parse(x).c===1):!history.length);
  $('quick').disabled=!h||S.phase!=='placement';
  $('m1').className=S.mode==='1p'?'active':'';$('m2').className=S.mode==='2p'?'active':'';
  $('diffbox').style.display=S.mode==='1p'?'block':'none';
@@ -245,33 +240,32 @@ function render(){
  let mk='',ds='',ch='';
  const win=S.win?new Set(S.win.ids):new Set();
  Object.keys(S.board).forEach(k=>{const id=+k,n=NODES[id],c=S.board[id];
-  if(!c.fe&&touchesFE(S.board,id))mk+=`<circle cx="${n.x}" cy="${n.y}" r="62" fill="none" stroke="#ff5a4d" stroke-width="6" stroke-dasharray="12 9"/>`;
+  if(touchesFE(S.board,id,c.p))mk+=`<circle cx="${n.x}" cy="${n.y}" r="62" fill="none" stroke="#ff5a4d" stroke-width="6" stroke-dasharray="12 9"/>`;
   if(win.has(id))mk+=`<circle cx="${n.x}" cy="${n.y}" r="66" fill="none" stroke="#fde047" stroke-width="12"/>`;
   if(S.sel===id)mk+=`<circle cx="${n.x}" cy="${n.y}" r="64" fill="none" stroke="#fde047" stroke-width="9"/>`;
-  ch+=`<circle cx="${n.x}" cy="${n.y}" r="44" fill="url(#g${c.p})" stroke="${c.p===1?'#bbf7d0':'#f3e8ff'}" stroke-width="6"/>`+
+  ch+=`<circle cx="${n.x}" cy="${n.y}" r="44" fill="url(#g${c.p})" stroke="${c.p===1?'#bfdbfe':'#fecaca'}" stroke-width="6"/>`+
    (c.fe?`<circle cx="${n.x}" cy="${n.y}" r="14" fill="#fff" stroke="#111827" stroke-width="5"/>`:'')});
  if(canAct()&&S.phase==='movement'&&S.sel!==null)reach(S.board,S.sel).forEach(id=>{const n=NODES[id];
   ds+=`<circle class="dest" cx="${n.x}" cy="${n.y}" r="30" fill="#fde047" stroke="#b45309" stroke-width="6"/>`});
  $('marks').innerHTML=mk;$('dests').innerHTML=ds;$('chips').innerHTML=ch}
 // ---- Game flow ----
-function newGame(){aiBusy=false;newState();$('start-res').textContent='';$('start-go').style.display='none';
- $('hl').disabled=$('hr').disabled=false;
- $('start-q').textContent=S.mode==='1p'?'Pick a hand. One hand holds the starting colour (Green). Guess right and you go first.'
-  :'Player 2 picks a hand. One hand holds the starting colour (Green). Guess right and Player 2 goes first.';
+function newGame(){aiBusy=false;newState();$('start-res').textContent='';$('start-go').style.display='none';$('hl').disabled=$('hr').disabled=false;
+ $('start-q').textContent=S.mode==='1p'?'Pick a hand. One hand holds the starting colour (Blue). Guess right and you play Blue and go first.'
+  :'One player picks a hand. One hand holds the starting colour (Blue). Guess right and you play Blue and go first.';
  render();show('m-start',1)}
-function pickHand(){const right=Math.random()<.5,guesserFirst=right;const guesser=S.mode==='1p'?1:2;
- S.cur=guesserFirst?guesser:3-guesser;$('hl').disabled=$('hr').disabled=true;
- const who=S.mode==='1p'?(S.cur===1?'You go':'Computer goes'):`Player ${S.cur} goes`;
- $('start-res').textContent=(guesserFirst?'Correct guess! ':'Not this time. ')+who+' first.';$('start-go').style.display='block'}
-function quickSetup(){if(!canAct()&&!(started&&!S.over&&human()&&S.phase==='placement'))return;
+function pickHand(){const right=Math.random()<.5;S.cur=1;S.ai=S.mode==='1p'?(right?2:1):0;$('hl').disabled=$('hr').disabled=true;
+ $('start-res').textContent=S.mode==='1p'?(right?'Correct guess! You play Blue and go first.':'Not this time. Computer plays Blue and goes first. You play Red.')
+  :(right?'Correct guess! The guesser plays Blue and goes first.':'Wrong guess. The other player plays Blue and goes first.');
+ $('start-go').style.display='block'}
+function quickSetup(){if(!(started&&!S.over&&human()&&S.phase==='placement'))return;
  let b,tries=0;do{b={...S.board};const free=NODES.map(n=>n.id).filter(i=>!b[i]);
   free.sort(()=>Math.random()-.5);let k=0;[1,2].forEach(p=>{['reg','fe'].forEach(t=>{for(let i=0;i<S.stock[p][t];i++)b[free[k++]]={p,fe:t==='fe'}})})}while(anyWin(b)&&++tries<80);
- S.board=b;S.stock={1:{reg:0,fe:0},2:{reg:0,fe:0}};S.phase='movement';S.moved=false;S.sel=null;history=[];render();kick()}
+ S.board=b;S.stock={1:{reg:0,fe:0},2:{reg:0,fe:0}};S.phase='movement';S.moved=false;S.sel=null;render();kick()}
 document.addEventListener('DOMContentLoaded',()=>{
  buildBoard();
  $('board').addEventListener('click',e=>{const c=e.target.closest('[data-id]');if(c)nodeClick(+c.dataset.id)});
  $('t-reg').onclick=()=>{S.type='reg';render()};$('t-fe').onclick=()=>{S.type='fe';render()};
- $('declare').onclick=declare;$('end').onclick=()=>endTurn();$('undo').onclick=undo;
+ $('declare').onclick=declare;$('end').onclick=()=>endTurn();
  $('newgame').onclick=newGame;$('rules').onclick=()=>show('m-rules',1);$('quick').onclick=quickSetup;
  $('m1').onclick=()=>{S.mode='1p';newGame()};$('m2').onclick=()=>{S.mode='2p';newGame()};
  $('diff').onchange=e=>{S.diff=e.target.value};
